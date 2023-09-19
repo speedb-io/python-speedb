@@ -9,7 +9,7 @@ from Cython.Build import cythonize
 from setuptools import Extension, setup
 
 extra_compile_args = [
-    '-std=c++11',
+    '-std=c++17',
     '-O3',
     '-Wall',
     '-Wextra',
@@ -33,7 +33,7 @@ except pkgconfig.PackageNotFoundError:
     ext_args = {
         'include_dirs': include_path.split(os.pathsep) if include_path else [],
         'library_dirs': library_path.split(os.pathsep) if library_path else [],
-        'libraries': ['rocksdb', 'snappy', 'bz2', 'z', 'lz4'],
+        'libraries': ['speedb', 'snappy', 'bz2', 'z', 'lz4'],
     }
 
 rocksdb_extension = Extension(

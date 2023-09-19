@@ -114,7 +114,6 @@ cdef extern from "rocksdb/advanced_options.h" namespace "rocksdb":
         AdvancedColumnFamilyOptions(const Options&);
         #  ---------------- OPTIONS NOT SUPPORTED ANYMORE ----------------
         # But kept for compatibality as they are still in the header files.
-        int max_mem_compaction_level
         double soft_rate_limit
         double hard_rate_limit
         unsigned int rate_limit_delay_max_milliseconds

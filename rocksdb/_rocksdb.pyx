@@ -239,11 +239,6 @@ cdef class PyGenericFilterPolicy(PyFilterPolicy):
             raise TypeError("%s is not of type %s" % (ob, IFilterPolicy))
 
         self.ob = ob
-        self.policy.reset(new filter_policy.FilterPolicyWrapper(
-                bytes_to_string(ob.name()),
-                <void*>ob,
-                create_filter_callback,
-                key_may_match_callback))
 
     cdef object get_ob(self):
         return self.ob
@@ -297,25 +292,6 @@ cdef class PyBloomFilterPolicy(PyFilterPolicy):
 
     def name(self):
         return PyBytes_FromString(self.policy.get().Name())
-
-    def create_filter(self, keys):
-        cdef string dst
-        cdef vector[Slice] c_keys
-
-        for key in keys:
-            c_keys.push_back(bytes_to_slice(key))
-
-        self.policy.get().CreateFilter(
-            vector_data(c_keys),
-            <int>c_keys.size(),
-            cython.address(dst))
-
-        return string_to_bytes(dst)
-
-    def key_may_match(self, key, filter_):
-        return self.policy.get().KeyMayMatch(
-            bytes_to_slice(key),
-            bytes_to_slice(filter_))
 
     cdef object get_ob(self):
         return self
@@ -585,10 +561,8 @@ cdef class BlockBasedTableFactory(PyTableFactory):
 
     def __init__(self,
             index_type='binary_search',
-            py_bool hash_index_allow_collision=True,
             checksum='crc32',
             PyCache block_cache=None,
-            PyCache block_cache_compressed=None,
             filter_policy=None,
             no_block_cache=False,
             block_size=None,
@@ -608,11 +582,6 @@ cdef class BlockBasedTableFactory(PyTableFactory):
         else:
             raise ValueError("Unknown index_type: %s" % index_type)
 
-        if hash_index_allow_collision:
-            table_options.hash_index_allow_collision = True
-        else:
-            table_options.hash_index_allow_collision = False
-
         if checksum == 'crc32':
             table_options.checksum = table_factory.kCRC32c
         elif checksum == 'xxhash':
@@ -622,9 +591,6 @@ cdef class BlockBasedTableFactory(PyTableFactory):
 
         if block_cache is not None:
             table_options.block_cache = block_cache.get_cache()
-
-        if block_cache_compressed is not None:
-            table_options.block_cache_compressed = block_cache_compressed.get_cache()
 
         if no_block_cache:
             table_options.no_block_cache = True
@@ -1076,12 +1042,6 @@ cdef class ColumnFamilyOptions(object):
         def __set__(self, value):
             self.copts.level0_stop_writes_trigger = value
 
-    property max_mem_compaction_level:
-        def __get__(self):
-            return self.copts.max_mem_compaction_level
-        def __set__(self, value):
-            self.copts.max_mem_compaction_level = value
-
     property target_file_size_base:
         def __get__(self):
             return self.copts.target_file_size_base
@@ -1393,12 +1353,6 @@ cdef class Options(ColumnFamilyOptions):
         def __set__(self, value):
             self.opts.max_background_jobs = value
 
-    property base_background_compactions:
-        def __get__(self):
-            return self.opts.base_background_compactions
-        def __set__(self, value):
-            self.opts.base_background_compactions = value
-
     property max_background_compactions:
         def __get__(self):
             return self.opts.max_background_compactions
@@ -1549,12 +1503,6 @@ cdef class Options(ColumnFamilyOptions):
   #         return self.opts.access_hint_on_compaction_start
   #     def __set__(self, AccessHint value):
   #         self.opts.access_hint_on_compaction_start = value
-
-    property new_table_reader_for_compaction_inputs:
-        def __get__(self):
-            return self.opts.new_table_reader_for_compaction_inputs
-        def __set__(self, value):
-            self.opts.new_table_reader_for_compaction_inputs = value
 
     property compaction_readahead_size:
         def __get__(self):
@@ -1713,12 +1661,6 @@ cdef class Options(ColumnFamilyOptions):
             return self.opts.allow_ingest_behind
         def __set__(self, value):
             self.opts.allow_ingest_behind = value
-
-    property preserve_deletes:
-        def __get__(self):
-            return self.opts.preserve_deletes
-        def __set__(self, value):
-            self.opts.preserve_deletes = value
 
     property two_write_queues:
         def __get__(self):

@@ -1,7 +1,7 @@
-python-rocksdb
+python-speedb
 ==============
 
-Python bindings for RocksDB.
+Python bindings for Speedb
 
 See https://rocksdb-tina.readthedocs.io/ for a more comprehensive install and
 usage description.
@@ -32,11 +32,11 @@ Acknowledgements
 
 This project attempts to collect the efforts put into different forks of the
 `pyrocksdb`_ project that was originally written by `stephan-hof`_, as sadly
-none seems to be actively maintained. In particular, the `python-rocksdb`_ fork
+none seems to be actively maintained. In particular, the `python-speedb`_ fork
 created by `twmht`_, but it also incorporates changes from other forks and
 unfinished pull requests.
 
-.. _python-rocksdb: https://github.com/twmht/python-rocksdb
+.. _python-speedb: https://github.com/twmht/python-speedb
 .. _twmht: https://github.com/twmht
 .. _pyrocksdb: https://github.com/stephan-hof/pyrocksdb
 .. _stephan-hof: https://github.com/stephan-hof
