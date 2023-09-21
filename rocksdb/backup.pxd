@@ -10,12 +10,12 @@ from .db cimport DB
 from .env cimport Env
 
 # TODO: For rocksdb >= 6.21.0, change to `rocksdb/utilities/backup_engine.h`.
-cdef extern from "rocksdb/utilities/backupable_db.h" namespace "rocksdb":
+cdef extern from "rocksdb/utilities/backup_engine.h" namespace "rocksdb":
     ctypedef uint32_t BackupID
 
     # TODO: For rocksdb >= 6.21.0, rename to `BackupEngineOptions`.
-    cdef cppclass BackupableDBOptions:
-        BackupableDBOptions(const string& backup_dir)
+    cdef cppclass BackupEngineOptions:
+        BackupEngineOptions(const string& backup_dir)
 
     cdef struct BackupInfo:
         BackupID backup_id
@@ -34,5 +34,5 @@ cdef extern from "rocksdb/utilities/backupable_db.h" namespace "rocksdb":
     # TODO: For rocksdb >= 6.21.0, swap order of first two parameters.
     cdef Status BackupEngine_Open "rocksdb::BackupEngine::Open"(
             Env*,
-            BackupableDBOptions&,
+            BackupEngineOptions&,
             BackupEngine**)
